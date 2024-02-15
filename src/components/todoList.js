@@ -7,14 +7,42 @@ import { TodoContext } from "../contexts/todoContext";
 import { List } from "@mui/material";
 
 export default function VirtualizedList({ userId }) {
-  const { userTodoList } = React.useContext(TodoContext);
+  const { userTodoList, fetchData } = React.useContext(TodoContext);
   const [showItem, setShowItem] = React.useState(false);
   const [itemDetail, setItemDetail] = React.useState({});
+  const [completeStatus, setCompleteStatus] = React.useState(null);
   const completeButtonColor = itemDetail.completed ? "#0B8A00" : "#FF4C4C";
   const itemOnClick = (e, id) => {
     const item = userTodoList.filter((item) => item.id == id);
     setShowItem(true);
     setItemDetail(item[0]);
+    setCompleteStatus(item[0].completed);
+  };
+  const deleteTodo = (id) => {
+    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+      method: "DELETE",
+    }).then((result) => {
+      result.json().then((res) => {
+        console.warn("something went wrong");
+        fetchData();
+      });
+    });
+  };
+  const completedButton = (id, status) => {
+    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        completed: completeStatus,
+      }),
+    }).then((result) => {
+      result.json().then((res) => {
+        console.warn("something went wrong");
+        fetchData();
+      });
+    });
   };
   return (
     <>
@@ -92,8 +120,11 @@ export default function VirtualizedList({ userId }) {
                   color: "white",
                   borderRadius: "20px",
                 }}
+                onClick={() => deleteTodo(itemDetail.id)}
               >
-                Delete
+                <button style={{ borderRadius: "20px", width: "100%" }}>
+                  Delete
+                </button>
               </div>
               <div
                 style={{
@@ -102,8 +133,13 @@ export default function VirtualizedList({ userId }) {
                   color: "white",
                   borderRadius: "20px",
                 }}
+                onClick={() =>
+                  completedButton(itemDetail.id, itemDetail.completed)
+                }
               >
-                {itemDetail.completed ? "Completed" : "Uncompleted"}
+                <button style={{ borderRadius: "20px", width: "100%" }}>
+                  {itemDetail.completed ? "Completed" : "Uncompleted"}
+                </button>
               </div>
             </div>
           </div>

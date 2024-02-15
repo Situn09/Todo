@@ -18,7 +18,7 @@ const TodoContextProvider = ({children}) => {
         }
       };
     return (
-        <TodoContext.Provider value={{ userTodoList, setUserTodoList }}>
+        <TodoContext.Provider value={{ userTodoList, setUserTodoList,fetchData }}>
             {children}
         </TodoContext.Provider>
     )
